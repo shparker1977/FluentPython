@@ -20,7 +20,7 @@ DEFAULT_CONCUR_REQ = 1
 MAX_CONCUR_REQ = 1
 
 SERVERS = {
-    'REMOTE': 'https://www.crwflags.com/fotw/images/a',
+    'REMOTE': 'https://github.com/hjnilsson/country-flags/tree/master/png250px',
     'LOCAL': 'http://localhost:8001/flags',
     'DELAY': 'http://localhost:8002/flags',
     'ERROR': 'http://localhost:8003/flags',
@@ -72,7 +72,7 @@ def expand_cc_args(every_cc, all_cc, cc_args, limit):
             text = fp.read()
         codes.update(text.split())
     else:
-        for cc in (c.upper() for c in cc_args)):
+        for cc in (c.upper() for c in cc_args):
             if len(cc) == 1 and cc in A_Z:
                 codes.update(cc+c for c in A_Z)
             elif len(cc) == 2 and all(c in A_Z for c in cc):
@@ -88,20 +88,22 @@ def process_args(default_concur_req):
                'Default: top 20 countries by population.')
     parser.add_argument('cc', metavar='CC', nargs='*',
                help='country code or 1st letter (eg. B for BA...BZ)')
-    parser.add_argument('-a', '--all', action'store_true',
+    parser.add_argument('-a', '--all', action='store_true',
                help='get all available flags (AD to ZW)')
-    parser.add_argument('-e', '--every', action=store_true',
+    parser.add_argument('-e', '--every', action='store_true',
                help='get flags for every possible code (AA...ZZZ)')
     parser.add_argument('-l', '--limit', metavar='N', type=int,
                help='limit to N first codes', default=sys.maxsize)
     parser.add_argument('-m', '--max_req', metavar='CONCURRENT', type=int,
-               default=default_concur_req
+               default=default_concur_req,
                help='maximum concurrent requests (default={})'
                      .format(default_concur_req))
     parser.add_argument('-s', '--server', metavar='LABEL',
                default=DEFAULT_SERVER,
                help='Server to hit; one of {} (default={})'
                      .format(server_options, DEFAULT_SERVER))
+    parser.add_argument('-v', '--verbose', action='store_true',
+                help='output detailed progress info')
     args = parser.parse_args()
     if args.max_req < 1:
         print('*** Usage error: --max_req CONCURRENT must be >= 1')
@@ -122,13 +124,13 @@ def process_args(default_concur_req):
         cc_list = sorted(POP20_CC)
     return args, cc_list
 
-def main(download_many, defalut_concur_req, max_concur_req):
+def main(download_many, default_concur_req, max_concur_req):
     args, cc_list = process_args(default_concur_req)
     actual_req = min(args.max_req, max_concur_req, len(cc_list))
     initial_report(cc_list, actual_req, args.server)
     base_url = SERVERS[args.server]
     t0 = time.time()
     counter = download_many(cc_list, base_url, args.verbose, actual_req)
-    assert sum(counter.values()) = len(cc_list), 'some downloads are unaccounted for'
-    final_reposrt(cc_list, counter, t0)
+    assert sum(counter.values()) == len(cc_list), 'some downloads are unaccounted for'
+    final_report(cc_list, counter, t0)
     
