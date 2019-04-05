@@ -1,6 +1,7 @@
 import asyncio
+import collections
 import aiohttp
-from flags import BASE_URL, save_flag, show, main
+from flags2_common import main, HTTPStatus, Result, save_flag
 
 #@asyncio.coroutine
 async def get_flag(session, cc):
