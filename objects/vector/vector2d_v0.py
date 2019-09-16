@@ -1,4 +1,5 @@
-from array import arrayimport math
+from array import array
+import math
 
 class Vector2d:
     typecode = 'd'
@@ -12,20 +13,26 @@ class Vector2d:
 
     def __repr__(self):
         class_name = type(self).__name__
-        return '{}({!r}, {!r})'.format(class_name_, *self)
+        return '{}({!r}, {!r})'.format(class_name, *self)
 
     def __str__(self):
         return str(tuple(self))
 
     def __bytes__(self):
         return (bytes([ord(self.typecode)]) +
-                bytest(array(self.typecode, self)))
+                bytes(array(self.typecode, self)))
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
 
     def __abs__(self):
-        return math.ypot(self.x, self.y)
+        return math.hypot(self.x, self.y)
 
     def __bool__(self):
         return bool(abs(self))
+
+    @classmethod
+    def frombytes(cls, octets):
+        typecode = chr(octets[0])
+        memv = memoryview(octets[1:]).cast(typecode)
+        return cls(*memv)
